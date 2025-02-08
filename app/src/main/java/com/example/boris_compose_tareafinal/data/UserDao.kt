@@ -13,6 +13,6 @@ interface UserDAo {
     @Update
     suspend fun actualizarUsuario(usuario: User)
 
-    @Query("SELECT * FROM usuarios")
+    @Query("SELECT * FROM Users")
     suspend fun obtenerTodosUsuarios(): List<User>
 }
