@@ -16,6 +16,8 @@ import com.example.boris_compose_tareafinal.data.UserViewModel
 fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+    var errorMessage by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -34,14 +36,21 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewMod
         Button(
             onClick = {
                 coroutineScope.launch {
-                    viewModel.updateAccess(email)
-                    navController.navigate("home/$email")
-                    
+                    val accessGranted = viewModel.updateAccess(email)
+                    if (accessGranted) {
+                        navController.navigate("home/$email") // ✅ Navega solo si el usuario existe
+                    } else {
+                        errorMessage = "Este correo no está registrado, por favor regístrate."
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Iniciar sesión")
+        }
+
+        if (errorMessage.isNotEmpty()) {
+            Text(errorMessage, color = MaterialTheme.colorScheme.error)
         }
 
         Spacer(modifier = Modifier.height(8.dp))

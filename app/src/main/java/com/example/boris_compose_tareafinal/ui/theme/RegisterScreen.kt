@@ -45,11 +45,13 @@ fun RegisterScreen(navController: NavController, viewModel: UserViewModel = view
             onClick = {
                 coroutineScope.launch {
                     val existingUser = viewModel.getUser(email)
+                    println("🗂️ Verificando si el usuario ya existe: $existingUser")
                     if (existingUser == null) {
-                        viewModel.insertUser(email)
+                        viewModel.insertUser(email, nombre)
                         navController.navigate("login")
                     } else {
-                        errorMessage = "El correo ya está registrado" // ✅ Actualiza el mensaje
+                        errorMessage = "El correo ya está registrado"
+                        println("⚠️ Usuario ya registrado: $email")
                     }
                 }
             },
@@ -57,6 +59,7 @@ fun RegisterScreen(navController: NavController, viewModel: UserViewModel = view
         ) {
             Text("Registrar")
         }
+
 
 // ✅ Mostrar mensaje de error si existe
         if (errorMessage.isNotEmpty()) {

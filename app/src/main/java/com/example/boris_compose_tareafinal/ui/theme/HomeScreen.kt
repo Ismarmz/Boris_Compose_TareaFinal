@@ -25,9 +25,15 @@ fun HomeScreen(navController: NavController, email: String, viewModel: UserViewM
     val handler = remember { Handler(Looper.getMainLooper()) }
     var mostrarNotificaciones by remember { mutableStateOf(true) }
 
-    LaunchedEffect(email) { // ✅ Usamos el email dinámico
-        mostrarNotificacion(context, "Bienvenido de nuevo!")
-        viewModel.loadUser(email) // ✅ Cargar los datos del usuario correcto
+    LaunchedEffect(email) {
+        println("🏠 Cargando datos del usuario para: $email")
+        viewModel.loadUser(email)
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            handler.removeCallbacksAndMessages(null) // Detener notificaciones al salir
+        }
     }
 
     LaunchedEffect(mostrarNotificaciones) {
@@ -43,35 +49,37 @@ fun HomeScreen(navController: NavController, email: String, viewModel: UserViewM
         }
     }
 
-    user?.let {
-        val formattedDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(it.lastAccess.toLong()))
+    if (user != null) {
+        val formattedDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(user!!.lastAccess))
 
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Bienvenido, ${it.username}", style = MaterialTheme.typography.titleLarge)
+            Text(text = "Bienvenido, ${user!!.username}", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Accesos: ${it.accessCount}")
+            Text(text = "Accesos: ${user!!.accessCount}")
             Text(text = "Último acceso: $formattedDate")
-            Spacer(modifier = Modifier.height(16.dp))
 
+            Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
                 navController.navigate("api")
                 mostrarNotificaciones = false
             }) {
                 Text("Consultar API")
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val activity = (context as? Activity)
-            Button(onClick = { activity?.finishAffinity() }) {
-                Text("Cerrar Aplicación")
-            }
         }
-    } ?: run {
-        Text(text = "Cargando usuario...")
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Cargando usuario...")
+        }
     }
 }
+
