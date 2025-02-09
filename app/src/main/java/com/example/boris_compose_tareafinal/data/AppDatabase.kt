@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [User::class], version = 1)
+@Database(entities = [User::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun usuarioDao(): UserDAo
+    abstract fun usuarioDao(): UserDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
@@ -18,7 +18,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                )
+                    .build()
                 INSTANCE = instance
                 instance
             }

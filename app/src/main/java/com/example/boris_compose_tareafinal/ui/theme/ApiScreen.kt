@@ -15,20 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.boris_compose_tareafinal.data.RetrofitClient
 import com.example.boris_compose_tareafinal.data.UserApi
-import kotlinx.coroutines.launch
+
 
 @Composable
-fun ApiScreen(navController: NavController) {
-    val usuarios = remember { mutableStateOf<List<UserApi>>(emptyList()) }
-    val coroutineScope = rememberCoroutineScope()
+fun ApiScreen(navController: NavController, setMostrarNotificaciones: (Boolean) -> Unit) {
+    val usuarios = remember { mutableStateListOf<UserApi>() }
 
     LaunchedEffect(Unit) {
-        coroutineScope.launch {
-            try {
-                usuarios.value = RetrofitClient.apiService.obtenerUsuarios()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        try {
+            usuarios.addAll(RetrofitClient.apiService.obtenerUsuarios())
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -36,19 +33,25 @@ fun ApiScreen(navController: NavController) {
         Text("Usuarios de la API", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (usuarios.value.isEmpty()) {
-            CircularProgressIndicator() // Muestra un indicador de carga si la lista está vacía
+        if (usuarios.isEmpty()) {
+            CircularProgressIndicator()
         } else {
             LazyColumn {
-                items(usuarios.value) { usuario ->
+                items(usuarios) { usuario ->
                     Card(
                         modifier = Modifier.fillMaxWidth().padding(8.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = "Nombre: ${usuario.name}", style = MaterialTheme.typography.bodyLarge)
-                            Text(text = "Correo: ${usuario.email}", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "Nombre: ${usuario.name}",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                "Correo: ${usuario.email}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }
@@ -56,11 +59,29 @@ fun ApiScreen(navController: NavController) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { navController.navigate("main") }) {
-            Text("Volver")
+        // ✅ Ahora los botones siempre aparecen
+        Button(onClick = {
+            navController.navigate("home")
+            setMostrarNotificaciones(true)
+        }) {
+            Text("Volver a la pantalla principal")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(onClick = {
+            navController.popBackStack()
+        }) {
+            Text("Cerrar Aplicación")
+        }
+
+
     }
 }
+
+
+
+
+
 
 

@@ -11,5 +11,4 @@ data class UserApi(
 interface ApiService {
     @GET("users")
     suspend fun obtenerUsuarios(): List<UserApi>
-
 }

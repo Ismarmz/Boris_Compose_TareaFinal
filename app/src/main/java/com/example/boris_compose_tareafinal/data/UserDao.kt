@@ -1,18 +1,19 @@
 package com.example.boris_compose_tareafinal.data
+
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface UserDAo {
-    @Query("SELECT * FROM Users WHERE email = :email")
-    fun obtenerUsuario(email: String): Flow<User?>
-
+interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertarUsuario(usuario: User)
+    suspend fun insertUser(user: User)
+
+    @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
+    suspend fun getUser(username: String): User?
 
     @Update
-    suspend fun actualizarUsuario(usuario: User)
+    suspend fun updateUser(user: User)
 
-    @Query("SELECT * FROM Users")
-    suspend fun obtenerTodosUsuarios(): List<User>
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
+
 }

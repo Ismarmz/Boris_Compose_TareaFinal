@@ -8,30 +8,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.boris_compose_tareafinal.data.UserViewModel
 import kotlinx.coroutines.launch
+import com.example.boris_compose_tareafinal.data.UserViewModel
+
 
 @Composable
-fun RegisterScreen(navController: NavController, viewModel: UserViewModel = viewModel()) {
-    var nombre by remember { mutableStateOf("") }
+fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
-    var errorMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextField(
-            value = nombre,
-            onValueChange = { nombre = it },
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
         TextField(
             value = email,
             onValueChange = { email = it },
@@ -44,32 +34,23 @@ fun RegisterScreen(navController: NavController, viewModel: UserViewModel = view
         Button(
             onClick = {
                 coroutineScope.launch {
-                    val existingUser = viewModel.getUser(email)
-                    if (existingUser == null) {
-                        viewModel.insertUser(email)
-                        navController.navigate("login")
-                    } else {
-                        errorMessage = "El correo ya está registrado" // ✅ Actualiza el mensaje
-                    }
+                    viewModel.updateAccess(email)
+                    navController.navigate("home/$email")
+                    
                 }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Registrar")
-        }
-
-// ✅ Mostrar mensaje de error si existe
-        if (errorMessage.isNotEmpty()) {
-            Text(errorMessage, color = MaterialTheme.colorScheme.error)
+            Text("Iniciar sesión")
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
-            onClick = { navController.navigate(Pantalla.Login.ruta) }, // ✅ Usamos la ruta correcta
+            onClick = { navController.navigate("register") },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("¿Ya tienes cuenta? Iniciar sesión")
+            Text("¿No tienes cuenta? Regístrate")
         }
     }
 }

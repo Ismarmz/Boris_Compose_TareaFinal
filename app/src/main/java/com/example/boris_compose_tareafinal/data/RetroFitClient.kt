@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     private val retrofit = Retrofit.Builder()
-        .baseUrl("https://jsonplaceholder.typicode.com/")
+        .baseUrl("https://jsonplaceholder.typicode.com/") // Correcto, baseUrl debe terminar en '/'
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
