@@ -1,15 +1,18 @@
 package com.example.boris_compose_tareafinal.ui
 
-import android.app.Activity
 import android.os.Handler
 import android.os.Looper
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.boris_compose_tareafinal.data.UserViewModel
@@ -26,7 +29,6 @@ fun HomeScreen(navController: NavController, email: String, viewModel: UserViewM
     var mostrarNotificaciones by remember { mutableStateOf(true) }
 
     LaunchedEffect(email) {
-        println("🏠 Cargando datos del usuario para: $email")
         viewModel.loadUser(email)
     }
 
@@ -42,32 +44,57 @@ fun HomeScreen(navController: NavController, email: String, viewModel: UserViewM
                 override fun run() {
                     if (mostrarNotificaciones) {
                         mostrarNotificacion(context, "¡No olvides consultar la API!")
-                        handler.postDelayed(this, 500)
+                        handler.postDelayed(this, 1500) // ⏱️ Aumentado el tiempo de notificación
                     }
                 }
-            }, 500)
+            }, 1500)
         }
     }
 
     if (user != null) {
         val formattedDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(user!!.lastAccess))
 
-        Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(24.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Text(text = "Bienvenido, ${user!!.username}", style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Accesos: ${user!!.accessCount}")
-            Text(text = "Último acceso: $formattedDate")
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "¡Bienvenido, ${user!!.username}!",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 26.sp
+                        )
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                navController.navigate("api")
-                mostrarNotificaciones = false
-            }) {
-                Text("Consultar API")
+                    Text("Accesos: ${user!!.accessCount}", style = MaterialTheme.typography.bodyLarge)
+                    Text("Último acceso: $formattedDate", style = MaterialTheme.typography.bodyMedium)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            navController.navigate("api")
+                            mostrarNotificaciones = false
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Consultar API")
+                    }
+                }
             }
         }
     } else {
@@ -82,4 +109,5 @@ fun HomeScreen(navController: NavController, email: String, viewModel: UserViewM
         }
     }
 }
+
 

@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                     RegisterScreen(
                         navController,
                         userViewModel
-                    ) // ✅ Corrección: Se eliminó `context`
+                    ) // ✅ Corrección: Se eliminó context
                 }
                 composable(Pantalla.Api.ruta) {
                     ApiScreen(navController) {
