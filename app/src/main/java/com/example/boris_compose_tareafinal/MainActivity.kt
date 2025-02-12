@@ -35,89 +35,110 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Crear el canal de notificación si es necesario
+        // We create notify channel if is necessary, in android +8
         createNotificationChannel()
+        //set content allow us use composable
         setContent {
+            //we use this to determinated if we need to show notifies
             var mostrarNotificaciones by remember { mutableStateOf(true) }
+            //to use navController
             val navController = rememberNavController()
+            //to get app context
             val context = LocalContext.current
+            //Use DAO to acces to database
             val userDao = remember { AppDatabase.getInstance(context).usuarioDao() }
+            //check if the user is registered
             var usuarioRegistrado by remember { mutableStateOf(false) }
 
+            //execute only 1 time when the app start
             LaunchedEffect(Unit) {
+                //Searches the user in the database
                 usuarioRegistrado = userDao.getUser("usuarioEjemplo") != null
-                println("Usuario registrado: $usuarioRegistrado") // 👈 Ver esto en Logcat
+                println("Usuario registrado: $usuarioRegistrado") // Is to check in the logcat
             }
 
+            //define the navigation of the app
             NavHost(
                 navController = navController,
+                //if the user is not register stars at register screen, if is register stars at home screen
                 startDestination = if (usuarioRegistrado) Pantalla.Home.ruta else Pantalla.Register.ruta
             ) {
+                //load register screen
                 composable(Pantalla.Register.ruta) {
+                    //instance the viewmodel
                     val userViewModel: UserViewModel = viewModel()
                     RegisterScreen(
                         navController,
                         userViewModel
-                    ) // ✅ Corrección: Se eliminó context
+                    )
                 }
+                //load api screen
                 composable(Pantalla.Api.ruta) {
                     ApiScreen(navController) {
+                        //recive it to show or not the notifications
                         mostrarNotificaciones = it
                     }
                 }
                 composable("home/{email}") { backStackEntry ->
+                    //load home screan
                     val email = backStackEntry.arguments?.getString("email") ?: ""
-                    HomeScreen(navController, email) // ✅ Pasamos el email a HomeScreen
+                    HomeScreen(navController, email)//we pass the email to lead the user with his data
                 }
-                composable(Pantalla.Login.ruta) { // ✅ Aseguramos que la ruta existe
+                //We load the login screen
+                composable(Pantalla.Login.ruta) {
                     val userViewModel: UserViewModel = viewModel()
                     LoginScreen(navController, userViewModel)
                 }
             }
         }
 
-        // Pedir permisos de notificación en Android 13+
+        //If the sistem is android 13+ ask for the permission to show notifies
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
+            //if no, just show the notify
             mostrarNotificacion()
         }
     }
 
-    // Launcher para pedir permiso de notificación en Android 13+
+    //We launch to ask for the permission
     @SuppressLint("MissingPermission")
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            //If the user accept the permission, we show the notify
             if (isGranted) {
                 mostrarNotificacion()
             }
         }
 
-    // Crear canal de notificación (Android 8+)
+    // We call the notification channel
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = "mi_canal_id"
             val channelName = "Canal de Notificaciones"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(channelId, channelName, importance)
+            //we pass al the parameter for the channel
 
+            //register the channel with the system
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager?.createNotificationChannel(channel)
         }
     }
 
-    // Función para mostrar una notificación
+    // We show a notify
     private fun mostrarNotificacion() {
         val channelId = "mi_canal_id"
         val notificationId = 1
 
         val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Asegúrate de que este ícono existe
+            //this is the icon notify
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("¡Hola!")
             .setContentText("Esta es una prueba de notificación")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        // Verificar permisos antes de mostrar la notificación
+        // Check the permissions and show the notify
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         ) {

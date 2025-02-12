@@ -16,11 +16,16 @@ import com.example.boris_compose_tareafinal.data.UserViewModel
 import kotlinx.coroutines.launch
 
 @Composable
+//we use navcontroller to navigate to other screens
+//we use UserViewModel to use the users data
 fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewModel()) {
     var email by remember { mutableStateOf("") }
+    //to execute the code in a coroutine
     val coroutineScope = rememberCoroutineScope()
+    //to show an error message
     var errorMessage by remember { mutableStateOf("") }
 
+    //shows all the components in a box
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +44,8 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewMod
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+                ) {
+                //Login tittle
                 Text(
                     text = "Iniciar Sesión",
                     style = MaterialTheme.typography.titleLarge.copy(
@@ -47,9 +53,11 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewMod
                         fontSize = 24.sp
                     )
                 )
-
+                //the user will enter his email here
                 TextField(
+                    //current email value
                     value = email,
+                    //update it every time tha the user write
                     onValueChange = { email = it },
                     label = { Text("Correo Electrónico") },
                     singleLine = true,
@@ -58,11 +66,15 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewMod
 
                 Button(
                     onClick = {
+                        //check if the user is registered with a coroutine to do not freeze the UI
                         coroutineScope.launch {
+                            //confirm if the email exist in the database
                             val accessGranted = viewModel.updateAccess(email)
                             if (accessGranted) {
-                                navController.navigate("home/$email") // ✅ Navega solo si el usuario existe
+                                //if the user exist navigate to home screen
+                                navController.navigate("home/$email")
                             } else {
+                                //if the email does not exist show an error message
                                 errorMessage = "Este correo no está registrado, por favor regístrate."
                             }
                         }
@@ -84,6 +96,7 @@ fun LoginScreen(navController: NavController, viewModel: UserViewModel = viewMod
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
                 TextButton(
+                    //in this text button the user can navigate to register screen if he does not have an account
                     onClick = { navController.navigate("register") }
                 ) {
                     Text("¿No tienes cuenta? Regístrate", color = MaterialTheme.colorScheme.primary)
