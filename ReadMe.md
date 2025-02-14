@@ -13,10 +13,15 @@ Esta aplicación móvil desarrollada con **Jetpack Compose** permite el registro
 ## Estructura del Proyecto
 ```
 ├── data
+│   ├── ApiService.kt
+│   ├── RetroFitClient.kt
 │   ├── User.kt
 │   ├── UserDao.kt
-│   └── AppDatabase.kt
+│   ├── AppDatabase.kt
+│   └── UserViewModel.kt
 ├── ui
+│   ├── Pantalla.kt
+│   ├── Notificaciones.kt
 │   ├── HomeScreen.kt
 │   ├── LoginScreen.kt
 │   ├── RegisterScreen.kt
@@ -27,11 +32,11 @@ Esta aplicación móvil desarrollada con **Jetpack Compose** permite el registro
 ## Cómo Ejecutar la Aplicación
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tu-repo/app-compose.git
+   git clone https://github.com/Ismarmz/Boris_Compose_TareaFinal.git
    ```
 2. Abre el proyecto en Android Studio.
 3. Ejecuta en un emulador o dispositivo físico con Android 5.0 o superior.
-
+-
 ## Permisos Requeridos
 - Acceso a Internet
 - Permisos de notificación para dispositivos Android 13+

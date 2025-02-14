@@ -35,6 +35,7 @@ fun ApiScreen(navController: NavController, setMostrarNotificaciones: (Boolean) 
     val usuarios = remember { mutableStateListOf<UserApi>() }
     //variable to get the activity, and close the activity in the future
     val activity = LocalContext.current.findActivity()
+
     //excute the code only 1 time when the screen is loaded
     LaunchedEffect(Unit) {
         try {

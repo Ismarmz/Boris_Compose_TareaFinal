@@ -11,7 +11,7 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: User)
 
-    //search an user by email, and return 1 if exists and 0 if not, is limit to return only 1 email
+    //search an user by email, is limit to return only 1 email
     @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     suspend fun getUser(email: String): User?
 

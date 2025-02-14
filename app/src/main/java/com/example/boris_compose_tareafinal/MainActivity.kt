@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
             //execute only 1 time when the app start
             LaunchedEffect(Unit) {
                 //Searches the user in the database
-                usuarioRegistrado = userDao.getUser("usuarioEjemplo") != null
+                usuarioRegistrado = userDao.getUser("prueba") != null
                 println("Usuario registrado: $usuarioRegistrado") // Is to check in the logcat
             }
 
@@ -68,8 +68,7 @@ class MainActivity : ComponentActivity() {
                     //instance the viewmodel
                     val userViewModel: UserViewModel = viewModel()
                     RegisterScreen(
-                        navController,
-                        userViewModel
+                        navController,userViewModel
                     )
                 }
                 //load api screen
